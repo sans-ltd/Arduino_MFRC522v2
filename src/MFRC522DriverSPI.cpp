@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: LGPL-2.1 */
+#include "MFRC522Debug.h"
 #include "MFRC522DriverSPI.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -32,6 +33,8 @@ void MFRC522DriverSPI::PCD_WriteRegister(const PCD_Register reg,    ///< The reg
   _spiClass.transfer(value);
   _chipSelectPin.high();    // Release slave again
   _spiClass.endTransaction(); // Stop using the SPI bus
+  Serial.print(MFRC522Debug::toString(reg));
+  Serial.printf(" < 0x%02x \n", value);
 } // End PCD_WriteRegister()
 
 /**
@@ -50,6 +53,11 @@ void MFRC522DriverSPI::PCD_WriteRegister(const PCD_Register reg,    ///< The reg
   }
   _chipSelectPin.high();    // Release slave again
   _spiClass.endTransaction(); // Stop using the SPI bus
+  Serial.print(MFRC522Debug::toString(reg));
+  Serial.printf(" < %d bytes: ", count);
+  for (int i = 0; i < count; i++)
+    Serial.printf("0x%02x ", values[i]);
+  Serial.println();
 } // End PCD_WriteRegister()
 
 /**
@@ -65,6 +73,8 @@ byte MFRC522DriverSPI::PCD_ReadRegister(const PCD_Register reg    ///< The regis
   value = _spiClass.transfer(0);          // Read the value back. Send 0 to stop reading.
   _chipSelectPin.high();      // Release slave again
   _spiClass.endTransaction(); // Stop using the SPI bus
+  Serial.print(MFRC522Debug::toString(reg));
+  Serial.printf(" : 0x%02x \n", value);
   return value;
 } // End PCD_ReadRegister()
 
@@ -104,5 +114,7 @@ void MFRC522DriverSPI::PCD_ReadRegister(const PCD_Register reg,    ///< The regi
   values[index] = _spiClass.transfer(0);      // Read the final byte. Send 0 to stop reading.
   _chipSelectPin.high();      // Release slave again
   _spiClass.endTransaction(); // Stop using the SPI bus
+  Serial.print(MFRC522Debug::toString(reg));
+  Serial.printf(" : read %d bytes \n", count);
 } // End PCD_ReadRegister()
 
